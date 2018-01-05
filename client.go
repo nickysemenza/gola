@@ -1,9 +1,9 @@
 package main
 
 import (
-	"net"
-	"github.com/nickysemenza/gola/ola_proto"
 	"github.com/golang/protobuf/proto"
+	"github.com/nickysemenza/gola/ola_proto"
+	"net"
 )
 
 func GetPlugins(conn net.Conn) *ola_proto.PluginListReply {
