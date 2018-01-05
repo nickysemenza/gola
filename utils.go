@@ -26,7 +26,9 @@ func decipherMessage(data []byte, whereTo proto.Message) error {
 
 	switch *rpcMessage.Type {
 	case ola_rpc.Type_RESPONSE_FAILED:
-		return errors.New("response failed")
+		//Buffer now probably contain an error msg
+		str := fmt.Sprintf("%s", rpcMessage.Buffer)
+		return errors.New("RESPONSE_FAILED: "+str)
 	}
 
 	innerBuffer := rpcMessage.GetBuffer()
