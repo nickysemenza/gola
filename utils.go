@@ -57,18 +57,18 @@ func sendMessage(conn net.Conn, pb proto.Message, rpcFunction string) {
 	rpcMessage.Name = proto.String(rpcFunction)
 	rpcMessage.Buffer = dataToSend
 
-	encodedRpcMessage, err := proto.Marshal(rpcMessage)
+	encodedRPCMessage, err := proto.Marshal(rpcMessage)
 	if err != nil {
 		log.Fatalln("couldn't marshal outer pb", err)
 	}
 	//log.Printf("%v", rpcMessage)
-	//log.Printf("%v", encodedRpcMessage)
+	//log.Printf("%v", encodedRPCMessage)
 
-	sendDataToDest(conn, encodedRpcMessage)
+	sendDataToDest(conn, encodedRPCMessage)
 }
 
-//Calls an RPC message, unpacking the response into resp proto.Message
-func callRpcMethod(conn net.Conn, rpcFunction string, pb proto.Message, responseMessage proto.Message) error {
+//callRPCMethod calls an RPC message, unpacking the response into resp proto.Message
+func callRPCMethod(conn net.Conn, rpcFunction string, pb proto.Message, responseMessage proto.Message) error {
 	sendMessage(conn, pb, rpcFunction)
 	rsp := readData(conn)
 
