@@ -29,7 +29,7 @@ func decipherMessage(data []byte, whereTo proto.Message) error {
 	case ola_rpc.Type_RESPONSE_FAILED:
 		//Buffer now probably contain an error msg
 		str := fmt.Sprintf("%s", rpcMessage.Buffer)
-		return errors.New("RESPONSE_FAILED: "+str)
+		return errors.New("RESPONSE_FAILED: " + str)
 	}
 
 	innerBuffer := rpcMessage.GetBuffer()
@@ -70,7 +70,6 @@ func sendMessage(conn net.Conn, pb proto.Message, rpcFunction string) {
 //Calls an RPC message, unpacking the response into resp proto.Message
 func callRpcMethod(conn net.Conn, rpcFunction string, pb proto.Message, responseMessage proto.Message) error {
 	sendMessage(conn, pb, rpcFunction)
-
 	rsp := readData(conn)
 
 	return decipherMessage(rsp, responseMessage)

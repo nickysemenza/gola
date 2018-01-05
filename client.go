@@ -3,12 +3,12 @@ package main
 import (
 	"github.com/golang/protobuf/proto"
 	"github.com/nickysemenza/gola/ola_proto"
-	"net"
 	"log"
+	"net"
 )
 
 type OlaClient struct {
-	Conn net.Conn
+	Conn    net.Conn
 	Address string
 }
 
@@ -20,13 +20,15 @@ func New(address string) *OlaClient {
 	}
 	return &OlaClient{
 		Address: address,
-		Conn: conn,
+		Conn:    conn,
 	}
 }
+
 //Closes the connection
 func (o *OlaClient) Close() {
 	o.Conn.Close()
 }
+
 //Calls the GetPlugins RPC function
 func (o *OlaClient) GetPlugins() (resp *ola_proto.PluginListReply, err error) {
 
@@ -36,6 +38,7 @@ func (o *OlaClient) GetPlugins() (resp *ola_proto.PluginListReply, err error) {
 	err = callRpcMethod(o.Conn, "GetPlugins", req, resp)
 	return
 }
+
 //Calls the GetUniverseInfo RPC function
 func (o *OlaClient) GetUniverseList() (resp *ola_proto.UniverseInfoReply, err error) {
 
@@ -67,6 +70,7 @@ func (o *OlaClient) GetDmx(universe int) (resp *ola_proto.DmxData, err error) {
 	err = callRpcMethod(o.Conn, "GetDmx", req, resp)
 	return
 }
+
 //Calls the SendDmx RPC function, with the universe and data parameters
 func (o *OlaClient) SendDmx(universe int, values []byte) (status bool, err error) {
 
