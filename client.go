@@ -1,4 +1,9 @@
-package main
+/*
+Package gola is a Open Lighting client for golang.
+
+It communicates over sockets/RPC/protobuf to an ola server.
+*/
+package gola
 
 import (
 	"github.com/golang/protobuf/proto"

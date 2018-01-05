@@ -1,4 +1,4 @@
-package main
+package gola
 
 import (
 	"encoding/binary"

@@ -1,13 +1,26 @@
-package main
+package gola_test
 
 import (
+	"github.com/nickysemenza/gola"
 	"log"
+	"testing"
 	"time"
 )
 
-func main() {
+func ExampleGetPlugins() {
+	client := gola.New("localhost:9010")
+	defer client.Close()
+
+	if x, err := client.GetPlugins(); err != nil {
+		log.Printf("GetPlugins: %v", err)
+	} else {
+		log.Printf("GetPlugins: %v", x)
+	}
+}
+
+func TestAA(t *testing.T) {
 	start := time.Now()
-	client := New("localhost:9010")
+	client := gola.New("localhost:9010")
 	defer client.Close()
 
 	if x, err := client.GetPlugins(); err != nil {
