@@ -1,7 +1,9 @@
 # gola
 [WIP] Open Lighting Project client for golang using RPC over sockets
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/nickysemenza/gola)](https://goreportcard.com/report/github.com/nickysemenza/gola)
 [![GoDoc](https://godoc.org/github.com/nickysemenza/gola?status.svg)](https://godoc.org/github.com/nickysemenza/gola)
+
 Example:
 ```
 client := New("localhost:9010")
