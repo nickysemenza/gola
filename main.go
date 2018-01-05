@@ -11,12 +11,13 @@ import (
 	"strconv"
 	"encoding/binary"
 	"time"
+	"github.com/pkg/errors"
 )
 
 const (
-	PROTOCOL_VERSION = 1
-	VERSION_MASK = 0xf0000000
-	SIZE_MASK = 0x0fffffff
+	PROTOCOLVERSION = 1
+	VERSIONMASK     = 0xf0000000
+	SIZEMASK        = 0x0fffffff
 )
 func main() {
 
@@ -28,60 +29,86 @@ func main() {
 	start := time.Now()
 
 
-	//test1 := new(ola_proto.Ack)
 	test1 := new(ola_proto.OptionalUniverseRequest)
-	//test1.Universe = proto.Int32(2)
+	//test1.Universe = proto.Int(33)
+	sendMessage(conn, test1,"GetUniverseInfo")
 
-
-	dataToSend, err := proto.Marshal(test1)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	//log.Printf("%v",dataToSend)
-	//log.Printf("%v",test1)
-	log.Println("-----------")
-
-	var test ola_rpc.Type
-	test = ola_rpc.Type_REQUEST
-
-	rpc_message := new(ola_rpc.RpcMessage)
-	rpc_message.Type = &test
-	//rpc_message.Id = proto.Uint32(1)
-	rpc_message.Name = proto.String("GetUniverseInfo")
-	rpc_message.Buffer = dataToSend
-
-
-	dataToSend2, err := proto.Marshal(rpc_message)
-	if err != nil {
-		log.Print("hi1")
-		log.Fatalln(err)
-	}
-	log.Printf("%v", rpc_message)
-	log.Printf("%v",dataToSend2)
-
-	sendDataToDest(conn, dataToSend2)
-
-
-	rpc_message2 := new(ola_rpc.RpcMessage)
 	rsp := readData(conn)
-	if err := proto.Unmarshal(rsp, rpc_message2); err != nil {
-		log.Fatalln("Failed to parse resp:", err)
-	}
-	innerBuffer :=rpc_message2.GetBuffer()
-	log.Printf("%v", rpc_message2)
-
 	innards := new(ola_proto.UniverseInfoReply)
-	if err := proto.Unmarshal(innerBuffer, innards); err != nil {
-		log.Fatalln("Failed to parse resp:", err)
+
+	if err := decipherMessage(rsp,innards); err != nil {
+		log.Fatalln("error deciphering:", err)
+	} else {
+		log.Printf("yay: %v", innards)
 	}
-	log.Printf("%v", innards.Universe[0].Name)
+
+
+
 
 	elapsed := time.Since(start)
-	log.Printf("Binomial took %s", elapsed)
+	log.Printf("test took %s", elapsed)
+}
+
+func decipherMessage(data []byte, whereTo proto.Message) error {
+	rpcMessage := new(ola_rpc.RpcMessage)
+	if err := proto.Unmarshal(data, rpcMessage); err != nil {
+		log.Fatalln("Failed to parse ola_rpc.RpcMessage resp:", err)
+		return err
+	}
+
+	switch *rpcMessage.Type {
+	case ola_rpc.Type_RESPONSE:
+		log.Printf("good to go")
+	case ola_rpc.Type_RESPONSE_FAILED:
+		return errors.New("response failed")
+	}
+
+	innerBuffer := rpcMessage.GetBuffer()
+	if err := proto.Unmarshal(innerBuffer, whereTo); err != nil {
+		log.Fatalln("Failed to parse inner resp:", err)
+		return err
+	}
+	return nil
+}
+
+func sendMessage(conn net.Conn, pb proto.Message, rpcFunction string) {
+
+	dataToSend, err := proto.Marshal(pb)
+	if err != nil {
+		log.Fatalln("couldn't marshal inner pb", err)
+	}
+
+	var t ola_rpc.Type
+	t = ola_rpc.Type_REQUEST
+
+	rpcMessage := new(ola_rpc.RpcMessage)
+	rpcMessage.Type = &t
+	rpcMessage.Id = proto.Uint32(1)
+	rpcMessage.Name = proto.String(rpcFunction)
+	rpcMessage.Buffer = dataToSend
 
 
+	encodedRpcMessage, err := proto.Marshal(rpcMessage)
+	if err != nil {
+		log.Fatalln("couldn't marshal outer pb", err)
+	}
+	//log.Printf("%v", rpcMessage)
+	//log.Printf("%v", encodedRpcMessage)
 
-	//var reply ola_proto.UniverseInfoReply
+	sendDataToDest(conn, encodedRpcMessage)
+}
+
+
+//public PluginListReply getPlugins() {
+//return (PluginListReply) callRpcMethod("GetPlugins", PluginListRequest.newBuilder().build());
+//}
+func getPlugins(conn net.Conn) *ola_proto.PluginListReply {
+
+	x := new(ola_proto.PluginListRequest)
+	callRpcMethod("GetPlugins",x)
+	return nil
+}
+func callRpcMethod(s string, request *ola_proto.PluginListRequest) {
 
 }
 
@@ -92,26 +119,24 @@ func readData(conn net.Conn) []byte {
 	conn.Read(header)
 
 	headerValue := int(binary.LittleEndian.Uint32(header))
-	size := headerValue  & SIZE_MASK
-	log.Printf("expecing %d bytes",size)
+	size := headerValue  & SIZEMASK
+	//log.Printf("expecing %d bytes",size)
 
 
 	data := make([]byte, size)
-	n, err:= conn.Read(data)
+	_, err:= conn.Read(data)
 	if err != nil {
-		log.Print("hi2")
 		log.Fatalln(err)
 	}
-	log.Printf("received %d bytes",n)
+	//log.Printf("received %d bytes",n)
 	return data
-	//log.Print(data)
 }
 
 //func sendDataToDest(data []byte, dst *string) {
 func sendDataToDest(conn net.Conn, data []byte) {
 
-	headerContent := (PROTOCOL_VERSION << 28) & VERSION_MASK
-	headerContent |= len(data) & SIZE_MASK
+	headerContent := (PROTOCOLVERSION << 28) & VERSIONMASK
+	headerContent |= len(data) & SIZEMASK
 	log.Printf("header: %v", headerContent)
 
 
