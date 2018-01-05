@@ -12,11 +12,12 @@ import (
 )
 
 const (
-	PROTOCOLVERSION = 1
-	VERSIONMASK     = 0xf0000000
-	SIZEMASK        = 0x0fffffff
+	protocolVersion = 1
+	versionMask     = 0xf0000000
+	sizeMask        = 0x0fffffff
 )
 
+//Deciphers an incoming message by unwrapping the outer ola_rpc.RpcMessage first
 func decipherMessage(data []byte, whereTo proto.Message) error {
 	rpcMessage := new(ola_rpc.RpcMessage)
 	if err := proto.Unmarshal(data, rpcMessage); err != nil {
@@ -39,6 +40,7 @@ func decipherMessage(data []byte, whereTo proto.Message) error {
 	return nil
 }
 
+//Sends a message to an RPC function
 func sendMessage(conn net.Conn, pb proto.Message, rpcFunction string) {
 
 	dataToSend, err := proto.Marshal(pb)
@@ -65,21 +67,23 @@ func sendMessage(conn net.Conn, pb proto.Message, rpcFunction string) {
 	sendDataToDest(conn, encodedRpcMessage)
 }
 
-func callRpcMethod(conn net.Conn, rpcFunction string, pb proto.Message, pb2 proto.Message) error {
+//Calls an RPC message, unpacking the response into resp proto.Message
+func callRpcMethod(conn net.Conn, rpcFunction string, pb proto.Message, responseMessage proto.Message) error {
 	sendMessage(conn, pb, rpcFunction)
 
 	rsp := readData(conn)
 
-	return decipherMessage(rsp, pb2)
+	return decipherMessage(rsp, responseMessage)
 }
 
+//Reads the 4 bytes of header and then body, returns the body
 func readData(conn net.Conn) []byte {
 
 	header := make([]byte, 4)
 	conn.Read(header)
 
 	headerValue := int(binary.LittleEndian.Uint32(header))
-	size := headerValue & SIZEMASK
+	size := headerValue & sizeMask
 	//log.Printf("expecing %d bytes",size)
 
 	data := make([]byte, size)
@@ -91,11 +95,11 @@ func readData(conn net.Conn) []byte {
 	return data
 }
 
-//func sendDataToDest(data []byte, dst *string) {
+//Sends data over the connection, pre-pending it with a 4 byte header
 func sendDataToDest(conn net.Conn, data []byte) {
 
-	headerContent := (PROTOCOLVERSION << 28) & VERSIONMASK
-	headerContent |= len(data) & SIZEMASK
+	headerContent := (protocolVersion << 28) & versionMask
+	headerContent |= len(data) & sizeMask
 	//log.Printf("header: %v", headerContent)
 
 	bs := make([]byte, 4)

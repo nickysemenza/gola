@@ -12,8 +12,9 @@ type OlaClient struct {
 	Address string
 }
 
+//Create a new OlaClient connecting to at the provided address
 func New(address string) *OlaClient {
-	conn, err := net.Dial("tcp", "localhost:9010")
+	conn, err := net.Dial("tcp", address)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -22,9 +23,11 @@ func New(address string) *OlaClient {
 		Conn: conn,
 	}
 }
+//Closes the connection
 func (o *OlaClient) Close() {
 	o.Conn.Close()
 }
+//Calls the GetPlugins RPC function
 func (o *OlaClient) GetPlugins() (resp *ola_proto.PluginListReply, err error) {
 
 	req := new(ola_proto.PluginListRequest)
@@ -33,6 +36,7 @@ func (o *OlaClient) GetPlugins() (resp *ola_proto.PluginListReply, err error) {
 	err = callRpcMethod(o.Conn, "GetPlugins", req, resp)
 	return
 }
+//Calls the GetUniverseInfo RPC function
 func (o *OlaClient) GetUniverseList() (resp *ola_proto.UniverseInfoReply, err error) {
 
 	req := new(ola_proto.OptionalUniverseRequest)
@@ -41,7 +45,9 @@ func (o *OlaClient) GetUniverseList() (resp *ola_proto.UniverseInfoReply, err er
 	err = callRpcMethod(o.Conn, "GetUniverseInfo", req, resp)
 	return
 }
-func (o *OlaClient) GetUniverseInfo( universe int) (resp *ola_proto.UniverseInfoReply, err error) {
+
+//Calls the GetUniverseInfo RPC function, with the universe parameter
+func (o *OlaClient) GetUniverseInfo(universe int) (resp *ola_proto.UniverseInfoReply, err error) {
 
 	req := new(ola_proto.OptionalUniverseRequest)
 	resp = new(ola_proto.UniverseInfoReply)
@@ -51,7 +57,8 @@ func (o *OlaClient) GetUniverseInfo( universe int) (resp *ola_proto.UniverseInfo
 	return
 }
 
-func (o *OlaClient) GetDmx( universe int) (resp *ola_proto.DmxData, err error) {
+//Calls the GetDmx RPC function, with the universe parameter
+func (o *OlaClient) GetDmx(universe int) (resp *ola_proto.DmxData, err error) {
 
 	req := new(ola_proto.UniverseRequest)
 	resp = new(ola_proto.DmxData)
@@ -60,7 +67,7 @@ func (o *OlaClient) GetDmx( universe int) (resp *ola_proto.DmxData, err error) {
 	err = callRpcMethod(o.Conn, "GetDmx", req, resp)
 	return
 }
-
+//Calls the SendDmx RPC function, with the universe and data parameters
 func (o *OlaClient) SendDmx(universe int, values []byte) (status bool, err error) {
 
 	req := new(ola_proto.DmxData)
