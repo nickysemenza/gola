@@ -1,13 +1,14 @@
 package gola_test
 
 import (
-	"github.com/nickysemenza/gola"
 	"log"
 	"testing"
 	"time"
+
+	"github.com/nickysemenza/gola"
 )
 
-func ExampleGetPlugins() {
+func ExampleNew() {
 	client := gola.New("localhost:9010")
 	defer client.Close()
 
@@ -18,7 +19,7 @@ func ExampleGetPlugins() {
 	}
 }
 
-func TestAA(t *testing.T) {
+func TestSmoke(t *testing.T) {
 	start := time.Now()
 	client := gola.New("localhost:9010")
 	defer client.Close()

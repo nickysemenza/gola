@@ -6,37 +6,38 @@ It communicates over sockets/RPC/protobuf to an ola server.
 package gola
 
 import (
-	"github.com/golang/protobuf/proto"
-	"github.com/nickysemenza/gola/ola_proto"
 	"log"
 	"net"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/nickysemenza/gola/ola_proto"
 )
 
-//OlaClient holds connection info
-type OlaClient struct {
+//Client holds connection info
+type Client struct {
 	Conn    net.Conn
 	Address string
 }
 
 //New creates a new OlaClient connecting to at the provided address
-func New(address string) *OlaClient {
+func New(address string) *Client {
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &OlaClient{
+	return &Client{
 		Address: address,
 		Conn:    conn,
 	}
 }
 
 //Close closes the connection
-func (o *OlaClient) Close() {
+func (o *Client) Close() {
 	o.Conn.Close()
 }
 
 //GetPlugins calls the GetPlugins RPC function
-func (o *OlaClient) GetPlugins() (resp *ola_proto.PluginListReply, err error) {
+func (o *Client) GetPlugins() (resp *ola_proto.PluginListReply, err error) {
 
 	req := new(ola_proto.PluginListRequest)
 	resp = new(ola_proto.PluginListReply)
@@ -46,7 +47,7 @@ func (o *OlaClient) GetPlugins() (resp *ola_proto.PluginListReply, err error) {
 }
 
 //GetUniverseList calls the GetUniverseInfo RPC function
-func (o *OlaClient) GetUniverseList() (resp *ola_proto.UniverseInfoReply, err error) {
+func (o *Client) GetUniverseList() (resp *ola_proto.UniverseInfoReply, err error) {
 
 	req := new(ola_proto.OptionalUniverseRequest)
 	resp = new(ola_proto.UniverseInfoReply)
@@ -56,7 +57,7 @@ func (o *OlaClient) GetUniverseList() (resp *ola_proto.UniverseInfoReply, err er
 }
 
 //GetUniverseInfo calls the GetUniverseInfo RPC function, with the universe parameter
-func (o *OlaClient) GetUniverseInfo(universe int) (resp *ola_proto.UniverseInfoReply, err error) {
+func (o *Client) GetUniverseInfo(universe int) (resp *ola_proto.UniverseInfoReply, err error) {
 
 	req := new(ola_proto.OptionalUniverseRequest)
 	resp = new(ola_proto.UniverseInfoReply)
@@ -67,7 +68,7 @@ func (o *OlaClient) GetUniverseInfo(universe int) (resp *ola_proto.UniverseInfoR
 }
 
 //GetDmx calls the GetDmx RPC function, with the universe parameter
-func (o *OlaClient) GetDmx(universe int) (resp *ola_proto.DmxData, err error) {
+func (o *Client) GetDmx(universe int) (resp *ola_proto.DmxData, err error) {
 
 	req := new(ola_proto.UniverseRequest)
 	resp = new(ola_proto.DmxData)
@@ -78,7 +79,7 @@ func (o *OlaClient) GetDmx(universe int) (resp *ola_proto.DmxData, err error) {
 }
 
 //SendDmx calls the SendDmx RPC function, with the universe and data parameters
-func (o *OlaClient) SendDmx(universe int, values []byte) (status bool, err error) {
+func (o *Client) SendDmx(universe int, values []byte) (status bool, err error) {
 
 	req := new(ola_proto.DmxData)
 	resp := new(ola_proto.Ack)

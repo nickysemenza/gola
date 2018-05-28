@@ -3,12 +3,13 @@ package gola
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/golang/protobuf/proto"
-	"github.com/nickysemenza/gola/ola_rpc"
-	"github.com/pkg/errors"
 	"log"
 	"net"
 	"os"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/nickysemenza/gola/ola_rpc"
+	"github.com/pkg/errors"
 )
 
 const (
