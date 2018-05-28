@@ -12,6 +12,9 @@ import (
 	"github.com/pkg/errors"
 )
 
+//OLA doesn't do things normally like proto2 or proto3, so there is some wonky stuff happening here...
+//http://docs.openlighting.org/ola/doc/latest/rpc_system.html luckily the docs explain it somewhat...
+
 const (
 	protocolVersion = 1
 	versionMask     = 0xf0000000
@@ -42,7 +45,7 @@ func decipherMessage(data []byte, whereTo proto.Message) error {
 }
 
 //Sends a message to an RPC function
-func sendMessage(conn net.Conn, pb proto.Message, rpcFunction string) {
+func (c *Client) sendMessage(pb proto.Message, rpcFunction string) {
 
 	dataToSend, err := proto.Marshal(pb)
 	if err != nil {
@@ -65,13 +68,13 @@ func sendMessage(conn net.Conn, pb proto.Message, rpcFunction string) {
 	//log.Printf("%v", rpcMessage)
 	//log.Printf("%v", encodedRPCMessage)
 
-	sendDataToDest(conn, encodedRPCMessage)
+	sendDataToDest(c.Conn, encodedRPCMessage)
 }
 
 //callRPCMethod calls an RPC message, unpacking the response into resp proto.Message
-func callRPCMethod(conn net.Conn, rpcFunction string, pb proto.Message, responseMessage proto.Message) error {
-	sendMessage(conn, pb, rpcFunction)
-	rsp := readData(conn)
+func (c *Client) callRPCMethod(rpcFunction string, pb proto.Message, responseMessage proto.Message) error {
+	c.sendMessage(pb, rpcFunction)
+	rsp := readData(c.Conn)
 
 	return decipherMessage(rsp, responseMessage)
 }

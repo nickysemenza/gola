@@ -32,61 +32,61 @@ func New(address string) *Client {
 }
 
 //Close closes the connection
-func (o *Client) Close() {
-	o.Conn.Close()
+func (c *Client) Close() {
+	c.Conn.Close()
 }
 
 //GetPlugins calls the GetPlugins RPC function
-func (o *Client) GetPlugins() (resp *ola_proto.PluginListReply, err error) {
+func (c *Client) GetPlugins() (resp *ola_proto.PluginListReply, err error) {
 
 	req := new(ola_proto.PluginListRequest)
 	resp = new(ola_proto.PluginListReply)
 
-	err = callRPCMethod(o.Conn, "GetPlugins", req, resp)
+	err = c.callRPCMethod("GetPlugins", req, resp)
 	return
 }
 
 //GetUniverseList calls the GetUniverseInfo RPC function
-func (o *Client) GetUniverseList() (resp *ola_proto.UniverseInfoReply, err error) {
+func (c *Client) GetUniverseList() (resp *ola_proto.UniverseInfoReply, err error) {
 
 	req := new(ola_proto.OptionalUniverseRequest)
 	resp = new(ola_proto.UniverseInfoReply)
 
-	err = callRPCMethod(o.Conn, "GetUniverseInfo", req, resp)
+	err = c.callRPCMethod("GetUniverseInfo", req, resp)
 	return
 }
 
 //GetUniverseInfo calls the GetUniverseInfo RPC function, with the universe parameter
-func (o *Client) GetUniverseInfo(universe int) (resp *ola_proto.UniverseInfoReply, err error) {
+func (c *Client) GetUniverseInfo(universe int) (resp *ola_proto.UniverseInfoReply, err error) {
 
 	req := new(ola_proto.OptionalUniverseRequest)
 	resp = new(ola_proto.UniverseInfoReply)
 
 	req.Universe = proto.Int(universe)
-	err = callRPCMethod(o.Conn, "GetUniverseInfo", req, resp)
+	err = c.callRPCMethod("GetUniverseInfo", req, resp)
 	return
 }
 
 //GetDmx calls the GetDmx RPC function, with the universe parameter
-func (o *Client) GetDmx(universe int) (resp *ola_proto.DmxData, err error) {
+func (c *Client) GetDmx(universe int) (resp *ola_proto.DmxData, err error) {
 
 	req := new(ola_proto.UniverseRequest)
 	resp = new(ola_proto.DmxData)
 
 	req.Universe = proto.Int(universe)
-	err = callRPCMethod(o.Conn, "GetDmx", req, resp)
+	err = c.callRPCMethod("GetDmx", req, resp)
 	return
 }
 
 //SendDmx calls the SendDmx RPC function, with the universe and data parameters
-func (o *Client) SendDmx(universe int, values []byte) (status bool, err error) {
+func (c *Client) SendDmx(universe int, values []byte) (status bool, err error) {
 
 	req := new(ola_proto.DmxData)
 	resp := new(ola_proto.Ack)
 
 	req.Universe = proto.Int(universe)
 	req.Data = values
-	err = callRPCMethod(o.Conn, "UpdateDmxData", req, resp)
+	err = c.callRPCMethod("UpdateDmxData", req, resp)
 
 	return true, err
 }
