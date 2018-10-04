@@ -6,10 +6,11 @@ import (
 	"time"
 
 	"github.com/nickysemenza/gola"
+	"github.com/stretchr/testify/require"
 )
 
 func ExampleNew() {
-	client := gola.New("localhost:9010")
+	client, _ := gola.New("localhost:9010")
 	defer client.Close()
 
 	if x, err := client.GetPlugins(); err != nil {
@@ -21,7 +22,8 @@ func ExampleNew() {
 
 func TestSmoke(t *testing.T) {
 	start := time.Now()
-	client := gola.New("localhost:9010")
+	client, err := gola.New("localhost:9010")
+	require.NoError(t, err)
 	defer client.Close()
 
 	if x, err := client.GetPlugins(); err != nil {

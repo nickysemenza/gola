@@ -6,7 +6,6 @@ It communicates over sockets/RPC/protobuf to an ola server.
 package gola
 
 import (
-	"log"
 	"net"
 
 	"github.com/golang/protobuf/proto"
@@ -20,15 +19,15 @@ type Client struct {
 }
 
 //New creates a new OlaClient connecting to at the provided address
-func New(address string) *Client {
+func New(address string) (*Client, error) {
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	return &Client{
 		Address: address,
 		Conn:    conn,
-	}
+	}, nil
 }
 
 //Close closes the connection
