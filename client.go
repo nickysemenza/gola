@@ -20,15 +20,16 @@ type Client struct {
 }
 
 //New creates a new OlaClient connecting to at the provided address
-func New(address string) *Client {
+func New(address string) (*Client, error) {
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
+	log.Printf("connected to %s", address)
 	return &Client{
 		Address: address,
 		Conn:    conn,
-	}
+	}, nil
 }
 
 //Close closes the connection

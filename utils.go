@@ -25,7 +25,8 @@ const (
 func decipherMessage(data []byte, whereTo proto.Message) error {
 	rpcMessage := new(ola_rpc.RpcMessage)
 	if err := proto.Unmarshal(data, rpcMessage); err != nil {
-		log.Fatalln("Failed to parse ola_rpc.RpcMessage resp:", err)
+		log.Println(data)
+		log.Fatalln(errors.Wrap(err, "Failed to parse ola_rpc.RpcMessage resp"))
 		return err
 	}
 

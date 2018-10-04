@@ -1,4 +1,5 @@
-/*
+ //from https://github.com/OpenLightingProject/ola/blob/master/common/protocol/Ola.proto
+ /*
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -17,8 +18,6 @@
  * Defines the protocol buffers used to talk to olad
  * Copyright (C) 2005 Simon Newton
  */
-
- //from https://github.com/OpenLightingProject/ola/blob/master/common/protocol/Ola.proto
 
 package ola.proto;
 
@@ -69,6 +68,7 @@ enum PluginIds {
   OLA_PLUGIN_OPENPIXELCONTROL = 21;
   OLA_PLUGIN_GPIO = 22;
   OLA_PLUGIN_SPIDMX = 23;
+  OLA_PLUGIN_NANOLEAF = 24;
 
   /*
    * To obtain a new plugin ID, open a ticket at

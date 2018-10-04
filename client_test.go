@@ -2,14 +2,24 @@ package gola_test
 
 import (
 	"log"
+	"os"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/nickysemenza/gola"
 )
 
+var olaAddress string
+
+func TestMain(m *testing.M) {
+	olaAddress = os.Getenv("OLA_TEST_ADDRESS")
+	os.Exit(m.Run())
+}
+
 func ExampleNew() {
-	client := gola.New("localhost:9010")
+	client, _ := gola.New(olaAddress)
 	defer client.Close()
 
 	if x, err := client.GetPlugins(); err != nil {
@@ -21,7 +31,8 @@ func ExampleNew() {
 
 func TestSmoke(t *testing.T) {
 	start := time.Now()
-	client := gola.New("localhost:9010")
+	client, err := gola.New(olaAddress)
+	require.NoError(t, err)
 	defer client.Close()
 
 	if x, err := client.GetPlugins(); err != nil {
