@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/nickysemenza/gola/ola_rpc"
+	ola_rpc "github.com/nickysemenza/gola/ola_proto/rpc"
 	"github.com/pkg/errors"
 )
 
