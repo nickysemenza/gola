@@ -10,7 +10,7 @@ import (
 	"net"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/nickysemenza/gola/ola_proto"
+	ola_proto "github.com/nickysemenza/gola/ola_proto/protocol"
 )
 
 //Client holds connection info
